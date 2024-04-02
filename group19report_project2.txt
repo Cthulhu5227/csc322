@@ -1,0 +1,121 @@
+
+322 Project 2 - Group 19 Report
+
+
+Background
+
+This project calls for students to create programs that take a single KenKen puzzle instance and  find its solved solution. Our group created two programs; one that converts a KenKen puzzle in a special format into an SMT-LIB string to be interpreted by Mathsat, and a program that converts the output of Mathsat into a string that corresponds to that puzzle's 49 character-length solution. These programs are written in Python. 
+
+
+Basic Tasks:
+
+The kenken2smt program starts by taking the input and using a loop to feed it into a variable called "args". From here, we clean the string before creating the cell objects; this includes replacing newline characters with commas, splitting into different arguments, and filtering any newline arguments. Afterwards, we create the cells for each individual argument making note of it's identifier, operand, region total, cell ID, and cell value. The cells are then fed into all of our functions employing the fundamental KenKen constraints and rules to be generated into the SMT-LIB content to be fed into Mathsat. Finally, we print this to the stdout to be interpreted by Mathsat. 
+
+
+The smt2kenken program initially checks to see if Mathsat found that the problem was solvable, i.e. we check to see top line of the model.smt is "sat". If so, we feed the rest of the file content (if it exists) into a function named remove_brackets. Here, we remove that outermost brackets of the solution provided by Mathsat, up to and excluding the line that contains ";; statistics", if it exists. The result is then read by the function named "parse_results". If the solution is not empty, we initialize a dictionary named solutions where we parse each of the puzzle piece solutions into a ([key], (value)) pair to be placed into the dictionary where the 'key' is the index of a box in the puzzle and the 'value' is the integer value to be placed in that box; the result of this will be 48 different ([key], (value)) pairs. Finally, since the each 'value' stores the solution to the puzzle, we iterate over the dictionary and print each value to the stdout in order.
+
+
+
+Extended Task - Pretty Printer
+
+Our group undertook the task of creating the prettyprinter for the KenKen puzzles. After being first passed into the main function, we pass it to our make_filename_list function in order to to parse it properly; this includes taking the first line of the given file, containg the puzzle number, and parsing it to retrive this number in int form. Afterwards, we extract a json string from a shell script to be passed as argument to our split_json file. Here, we preprocess the string to take care of line breaks, and add the appropriate lists to string_list. We then process each of the strings from this list by organizing them into a 2D structure. After further formatting the presentation of the data to make it easier to read, we pass this into the pretty_print function. In this last step, we use pipes ("ǁ") and equals signs ("=") to create a visually-appealing puzzle structure and iterate over the rows of data to input the proper integers, target numbers, and target operations to puzzle. Finally, we push this puzzle the stdout.
+
+
+--Due to time constraints, these statistics do not reflect a fully comprehensive analysis of the tests; they represent a selected sample of the data available.
+
+Statistics - Basic Tasks: 
+a:
+  easiest: time-seconds 0.163, memory-mb 20.516
+  easy: time-seconds 0.119, memory-mb 20.215
+  medium: time-seconds 0.703, memory-mb 21.590
+  hard: time-seconds 0.905, memory-mb 21.574
+as:
+  easiest: time-seconds 0.047, memory-mb 19.676
+  easy: time-seconds 0.110, memory-mb 20.738
+  medium: time-seconds 0.233, memory-mb 21.012
+  hard: time-seconds 0.659, memory-mb 21.484
+m:
+  easiest: time-seconds 18.501, memory-mb 41.621
+  easy: time-seconds 33.036, memory-mb 55.730
+  medium: time-seconds 231.158, memory-mb 90.230
+  hard: time-seconds 134.258, memory-mb 114.766
+dm:
+  easiest: time-seconds 23.022, memory-mb 42.535
+  easy: : time-seconds 42.439, memory-mb 64.637
+  medium: time-seconds 118.194, memory-mb 86.891
+  hard: time-seconds 207.809, memory-mb 155.316
+adms:
+  easiest: time-seconds 3.913, memory-mb 36.266
+  easy: time-seconds 4.372, memory-mb 34.734
+  medium: time-seconds 9.066, memory-mb 38.820
+  hard: time-seconds 9.677, memory-mb 38.711
+
+Example of pretty printer
+./pp.py <puzzle.txt
+=========================================================
+ǁ13+    ǁ9+     |       ǁ13+    |       |       ǁ12+    ǁ
+ǁ       ǁ       |       ǁ       |       |       ǁ       ǁ
+ǁ       ǁ       |       ǁ       |       |       ǁ       ǁ
+ǁ-------ǁ=======|=======ǁ-------|=======|=======ǁ-------ǁ
+ǁ       ǁ12+    ǁ4      ǁ       ǁ13+    |       ǁ       ǁ
+ǁ       ǁ       ǁ       ǁ       ǁ       |       ǁ       ǁ
+ǁ       ǁ       ǁ       ǁ       ǁ       |       ǁ       ǁ
+ǁ=======ǁ-------ǁ=======ǁ=======ǁ-------|=======ǁ-------ǁ
+ǁ3+     ǁ       ǁ11+    |       ǁ       ǁ11+    ǁ       ǁ
+ǁ       ǁ       ǁ       |       ǁ       ǁ       ǁ       ǁ
+ǁ       ǁ       ǁ       |       ǁ       ǁ       ǁ       ǁ
+ǁ-------ǁ-------ǁ-------|=======ǁ=======ǁ-------ǁ=======ǁ
+ǁ       ǁ       ǁ       ǁ4      ǁ3+     ǁ       ǁ9+     ǁ
+ǁ       ǁ       ǁ       ǁ       ǁ       ǁ       ǁ       ǁ
+ǁ       ǁ       ǁ       ǁ       ǁ       ǁ       ǁ       ǁ
+ǁ=======ǁ=======ǁ=======ǁ=======ǁ-------ǁ=======ǁ-------ǁ
+ǁ12+    |       ǁ9+     |       ǁ       ǁ8+     ǁ       ǁ
+ǁ       |       ǁ       |       ǁ       ǁ       ǁ       ǁ
+ǁ       |       ǁ       |       ǁ       ǁ       ǁ       ǁ
+ǁ=======|=======ǁ-------|=======ǁ=======ǁ-------ǁ=======ǁ
+ǁ5+     |       ǁ       ǁ11+    |       ǁ       ǁ7+     ǁ
+ǁ       |       ǁ       ǁ       |       ǁ       ǁ       ǁ
+ǁ       |       ǁ       ǁ       |       ǁ       ǁ       ǁ
+ǁ=======|=======ǁ=======ǁ=======|=======ǁ=======ǁ-------ǁ
+ǁ7+     |       ǁ7+     |       ǁ13+    |       ǁ       ǁ
+ǁ       |       ǁ       |       ǁ       |       ǁ       ǁ
+ǁ       |       ǁ       |       ǁ       |       ǁ       ǁ
+=========================================================
+
+./pp.py <solution.txt
+=========================================================
+ǁ13+    ǁ9+     |       ǁ13+    |       |       ǁ12+    ǁ
+ǁ   7   ǁ   4   |   5   ǁ   6   |   3   |   1   ǁ   2   ǁ
+ǁ       ǁ       |       ǁ       |       |       ǁ       ǁ
+ǁ-------ǁ=======|=======ǁ-------|=======|=======ǁ-------ǁ
+ǁ       ǁ12+    ǁ4      ǁ       ǁ13+    |       ǁ       ǁ
+ǁ   6   ǁ   1   ǁ   4   ǁ   3   ǁ   5   |   2   ǁ   7   ǁ
+ǁ       ǁ       ǁ       ǁ       ǁ       |       ǁ       ǁ
+ǁ=======ǁ-------ǁ=======ǁ=======ǁ-------|=======ǁ-------ǁ
+ǁ3+     ǁ       ǁ11+    |       ǁ       ǁ11+    ǁ       ǁ
+ǁ   2   ǁ   5   ǁ   7   |   1   ǁ   6   ǁ   4   ǁ   3   ǁ
+ǁ       ǁ       ǁ       |       ǁ       ǁ       ǁ       ǁ
+ǁ-------ǁ-------ǁ-------|=======ǁ=======ǁ-------ǁ=======ǁ
+ǁ       ǁ       ǁ       ǁ4      ǁ3+     ǁ       ǁ9+     ǁ
+ǁ   1   ǁ   6   ǁ   3   ǁ   4   ǁ   2   ǁ   7   ǁ   5   ǁ
+ǁ       ǁ       ǁ       ǁ       ǁ       ǁ       ǁ       ǁ
+ǁ=======ǁ=======ǁ=======ǁ=======ǁ-------ǁ=======ǁ-------ǁ
+ǁ12+    |       ǁ9+     |       ǁ       ǁ8+     ǁ       ǁ
+ǁ   5   |   7   ǁ   6   |   2   ǁ   1   ǁ   3   ǁ   4   ǁ
+ǁ       |       ǁ       |       ǁ       ǁ       ǁ       ǁ
+ǁ=======|=======ǁ-------|=======ǁ=======ǁ-------ǁ=======ǁ
+ǁ5+     |       ǁ       ǁ11+    |       ǁ       ǁ7+     ǁ
+ǁ   3   |   2   ǁ   1   ǁ   7   |   4   ǁ   5   ǁ   6   ǁ
+ǁ       |       ǁ       ǁ       |       ǁ       ǁ       ǁ
+ǁ=======|=======ǁ=======ǁ=======|=======ǁ=======ǁ-------ǁ
+ǁ7+     |       ǁ7+     |       ǁ13+    |       ǁ       ǁ
+ǁ   4   |   3   ǁ   2   |   5   ǁ   7   |   6   ǁ   1   ǁ
+ǁ       |       ǁ       |       ǁ       |       ǁ       ǁ
+=========================================================
+
+Group Members in Alphabetical Order:
+
+Jasper St. John
+Jett Schreiber
+Justin Oliveros
+Rahul Sachdeva
